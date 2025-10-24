@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+<style>
+  body {
+    font-family: Helvetica, sans-serif;
+    background-color: #ecf0f1;
+    color: #2d2d2d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .calculator {
+    background-color: #fffafa;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    padding: 20px;
+    width: 320px;
+  }
+
+  #display {
+    width: 100%;
+    height: 60px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    text-align: right;
+    font-size: 2rem;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    overflow-x: auto;
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  button {
+    padding: 20px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+    transition: all 0.1s ease;
+  }
+
+  .number {
+    background-color: lightgray;
+  }
+
+  .action {
+    background-color: palevioletred;
+    color: white;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+  }
+
+  button:active {
+    transform: scale(0.95);
+  }
+</style>
+</head>
+<body>
+  <div class="calculator">
+    <div id="display">0</div>
+    <div class="buttons">
+      <button class="action" data-action="C">C</button>
+      <button class="action" data-action="Del">Del</button>
+      <button class="action" data-action="%">%</button>
+      <button class="action" data-action="/">÷</button>
+      
+      <button class="number" data-number="7">7</button>
+      <button class="number" data-number="8">8</button>
+      <button class="number" data-number="9">9</button>
+      <button class="action" data-action="*">×</button>
+      
+      <button class="number" data-number="4">4</button>
+      <button class="number" data-number="5">5</button>
+      <button class="number" data-number="6">6</button>
+      <button class="action" data-action="-">-</button>
+      
+      <button class="number" data-number="1">1</button>
+      <button class="number" data-number="2">2</button>
+      <button class="number" data-number="3">3</button>
+      <button class="action" data-action="+">+</button>
+      
+      <button class="number" data-number="0">0</button>
+      <button class="number" data-number=".">.</button>
+      <button class="action" data-action="Exp">Exp</button>
+      <button class="action" data-action="=">=</button>
+    </div>
+  </div>
+
+<script>
+  const display = document.getElementById('display');
+  let firstNumber = null;
+  let operator = null;
+  let resetDisplay = false;
+
+  const updateDisplay = (value) => {
+    if (resetDisplay || display.textContent === "0") {
+      display.textContent = value;
+      resetDisplay = false;
+    } else {
+      display.textContent += value;
+    }
+  };
+
+  const calculate = () => {
+    const secondNumber = parseFloat(display.textContent);
+    let result;
+    switch(operator) {
+      case '+': result = firstNumber + secondNumber; break;
+      case '-': result = firstNumber - secondNumber; break;
+      case '*': result = firstNumber * secondNumber; break;
+      case '/': result = firstNumber / secondNumber; break;
+      case '%': result = firstNumber % secondNumber; break;
+      case 'Exp': result = Math.pow(firstNumber, secondNumber); break;
+      default: return;
+    }
+    display.textContent = result;
+    firstNumber = null;
+    operator = null;
+    resetDisplay = true;
+  };
+
+  document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const number = btn.dataset.number;
+      const action = btn.dataset.action;
+
+      if (number !== undefined) {
+        updateDisplay(number);
+      } else if (action) {
+        if (action === "C") {
+          display.textContent = "0";
+          firstNumber = null;
+          operator = null;
+        } else if (action === "Del") {
+          display.textContent = display.textContent.slice(0, -1) || "0";
+        } else if (action === "=") {
+          if (operator !== null) calculate();
+        } else {
+          firstNumber = parseFloat(display.textContent);
+          operator = action;
+          resetDisplay = true;
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>
